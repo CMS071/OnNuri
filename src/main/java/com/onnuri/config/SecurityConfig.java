@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,26 +22,29 @@ public class SecurityConfig {
 	    return new BCryptPasswordEncoder();
 	}
 	
-	 @Bean
-	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public UserDetailsService userDetailsService() {
+	    return userService;
+	    }
+	
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	        http
-	            .authorizeHttpRequests()
-	                .requestMatchers("/user/login", "/loginProcess", "/user/signUpForm", "/user/signUpProcess"
-	                		).permitAll()
-	                .anyRequest().authenticated()
-	            .and()
-	            .formLogin()
+	            .authorizeHttpRequests(auth -> auth
+	                .anyRequest().permitAll()
+	             ) 
+	            .formLogin(form -> form
 	                .loginPage("/user/login")
 	                .loginProcessingUrl("/loginProcess")
 	                .defaultSuccessUrl("/Main", true)
-	                .failureUrl("/user/login?error=true")
 	                .permitAll()
-	            .and()
-	            .logout()
+	            ) 
+	            .logout(logout -> logout
 	                .logoutUrl("/logout")
 	                .logoutSuccessUrl("/user/login")
 	                .invalidateHttpSession(true)
-	                .permitAll();
+	                .permitAll()
+	            );
 
 	        return http.build();
 	    }

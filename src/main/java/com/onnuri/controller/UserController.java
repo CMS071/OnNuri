@@ -19,7 +19,6 @@ public class UserController {
 
     @RequestMapping("/user/login")
     public String login() {
-    	System.out.println("로그인 페이지 접근됨"); // 로그 확인용
         return "user/login"; 
     }
     
