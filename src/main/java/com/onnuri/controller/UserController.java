@@ -17,8 +17,8 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @RequestMapping("/user/login")
-    public String login() {
+    @RequestMapping("/")
+    public String root() {
         return "user/login"; 
     }
     
@@ -28,18 +28,19 @@ public class UserController {
     }
 
     @RequestMapping("/user/signUpProcess")
-    public String join(UserDto dto, Model model) {
+    public String signUpProcess(UserDto dto, Model model) {
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(dto.getUser_passwd());
         dto.setUser_passwd(encodedPassword);
-
+        dto.setUser_authority("user");
+        
         int result = userService.insertUser(dto);
         if (result > 0) {
             model.addAttribute("message", "회원가입 성공");
-            return "redirect:/user/login";
+            return "redirect:/";
         } else {
             model.addAttribute("message", "회원가입 실패");
-            return "user/loginForm";
+            return "user/signUpForm";
         }
     }
     

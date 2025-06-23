@@ -21,12 +21,16 @@ public class UserService implements UserDetailsService {
 	
 	@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDto user = userMapper.findByUserId(username);
+		 System.out.println("입력된 아이디: " + username); // 확인용 로그
+		UserDto user = userMapper.findByUserId(username);
 
         if (user == null) {
+        	System.out.println("해당 아이디 없음: " + username);
             throw new UsernameNotFoundException("User not found: " + username);
         }
 
+        System.out.println("DB에서 찾은 비밀번호: " + user.getUser_passwd());
+        
         return new CustomUserDetails(user);
     }
 }

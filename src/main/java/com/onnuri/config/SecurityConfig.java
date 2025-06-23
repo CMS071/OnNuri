@@ -23,13 +23,9 @@ public class SecurityConfig {
 	}
 	
 	@Bean
-	public UserDetailsService userDetailsService() {
-	    return userService;
-	    }
-	
-	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	        http
+	        	.csrf(csrf -> csrf.disable())
 	            .authorizeHttpRequests(auth -> auth
 	                .anyRequest().permitAll()
 	             ) 
@@ -37,6 +33,7 @@ public class SecurityConfig {
 	                .loginPage("/user/login")
 	                .loginProcessingUrl("/loginProcess")
 	                .defaultSuccessUrl("/Main", true)
+	                .failureUrl("/user/login?error")
 	                .permitAll()
 	            ) 
 	            .logout(logout -> logout
