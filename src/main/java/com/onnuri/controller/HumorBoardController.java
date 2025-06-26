@@ -7,12 +7,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.onnuri.dao.UserMapper;
 import com.onnuri.dto.HumorBoardDto;
 import com.onnuri.service.HumorBoardService;
 
@@ -22,7 +24,15 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class HumorBoardController {
 	@Autowired
+	UserMapper userMapper;
+	
+	@Autowired
     private HumorBoardService humorBoardService;
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.setDisallowedFields("humor_img");
+	}
 
     // 게시글 목록 페이지
     @RequestMapping("/humor/list")
@@ -38,28 +48,28 @@ public class HumorBoardController {
     	humorBoardService.incrementViewCount(humor_idx); // 조회수 증가
         HumorBoardDto dto = humorBoardService.getHumorById(humor_idx);
         model.addAttribute("dto", dto);
-        return "humorBoard/detail";
+        return "humorBoard/humorDetail";
     }
 
     // 게시글 작성 폼
-    @RequestMapping("/humor/writeForm")
+    @RequestMapping("/humor/write")
     public String writeForm() {
-        return "Humor/writeForm";
+        return "humorBoard/humorWrite";
     }
 
     // 게시글 작성 처리
-    @RequestMapping("/humor/write")
-    public String write(HumorBoardDto dto,
-            @RequestParam("humor_img") List<MultipartFile> files,
+    @RequestMapping("/humor/humorWriteProcess")
+    public String write(@ModelAttribute HumorBoardDto dto,
+    		@RequestParam("humor_img") List<MultipartFile> files,
             HttpSession session,
             HttpServletRequest request,
             Model model) {
 
 	Integer user_num = (Integer) session.getAttribute("user_num");
-	if (user_num == null) return "redirect:/user/login";
+	if (user_num == null) return "redirect:/";
 	dto.setUser_num(user_num);
 	
-	String uploadPath = request.getServletContext().getRealPath("/resources/static/img/humor/");
+	String uploadPath = request.getServletContext().getRealPath("D:/upload/humor/");
 	File uploadDir = new File(uploadPath);
 	if (!uploadDir.exists()) uploadDir.mkdirs();
 	
@@ -71,7 +81,7 @@ public class HumorBoardController {
 	        String originName = file.getOriginalFilename();
 	        String saveName = System.currentTimeMillis() + "_" + originName;
 	        file.transferTo(new File(uploadDir, saveName));
-	        savedFiles.add("/resources/static/img/humor/" + saveName);
+	        savedFiles.add("/img/humor/" + saveName); // 브라우저 접근용 경로 
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
