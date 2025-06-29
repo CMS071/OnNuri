@@ -60,7 +60,8 @@ public class HumorBoardController {
     // 게시글 작성 처리
     @RequestMapping("/humor/humorWriteProcess")
     public String write(@ModelAttribute HumorBoardDto dto,
-    		@RequestParam("humor_img") List<MultipartFile> files,
+    		@RequestParam(value = "humor_img", required = false) 
+    		List<MultipartFile> files,
             HttpSession session,
             HttpServletRequest request,
             Model model) {
@@ -69,14 +70,15 @@ public class HumorBoardController {
 	if (user_num == null) return "redirect:/";
 	dto.setUser_num(user_num);
 	
-	String uploadPath = request.getServletContext().getRealPath("D:/upload/humor/");
+	String uploadPath = "D:/upload/humor/";
 	File uploadDir = new File(uploadPath);
 	if (!uploadDir.exists()) uploadDir.mkdirs();
 	
 	List<String> savedFiles = new ArrayList<>();
 	
-	for (MultipartFile file : files) {
-	if (!file.isEmpty()) {
+	if (files != null) {
+	 for (MultipartFile file : files) {
+	   if (!file.isEmpty()) {	 
 	    try {
 	        String originName = file.getOriginalFilename();
 	        String saveName = System.currentTimeMillis() + "_" + originName;
@@ -86,6 +88,7 @@ public class HumorBoardController {
 	        e.printStackTrace();
 	    }
 	  }
+	 }
 	}
 	
 	// 이미지 경로를 ,로 이어서 저장

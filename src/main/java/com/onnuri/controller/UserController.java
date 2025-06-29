@@ -1,13 +1,17 @@
 package com.onnuri.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.onnuri.dto.CustomUserDetails;
 import com.onnuri.dto.UserDto;
 import com.onnuri.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
@@ -36,7 +40,8 @@ public class UserController {
         
         int result = userService.insertUser(dto);
         if (result > 0) {
-            model.addAttribute("message", "회원가입 성공");
+        	
+        	model.addAttribute("message", "회원가입 성공");
             return "redirect:/";
         } else {
             model.addAttribute("message", "회원가입 실패");
@@ -45,7 +50,12 @@ public class UserController {
     }
     
     @RequestMapping("/Main")
-    public String main() {
+    public String main(@AuthenticationPrincipal CustomUserDetails userDetails,
+    		 HttpSession session) {
+    	if (userDetails != null) {
+    		session.setAttribute("user_num", userDetails.getUser_num());
+    		session.setAttribute("user_nickname", userDetails.getUser_nickname());
+    	}
         return "main/main"; 
     }
 }
