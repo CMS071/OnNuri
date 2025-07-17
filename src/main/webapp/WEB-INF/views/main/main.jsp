@@ -8,6 +8,7 @@
 </head>
 <body>
 	메인 페이지
-	<p><a href="/humor/list">유머 게시판</a></p>
+	<p><a href="/humorBoard/list">유머 게시판</a></p>
+	<p><a href="/dailyBoard/list">일상 게시판</a></p>
 </body>
 </html>

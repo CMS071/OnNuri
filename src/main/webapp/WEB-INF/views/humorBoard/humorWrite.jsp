@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h2>게시글 작성</h2>
-	<form method="post" action="/humor/humorWriteProcess" enctype="multipart/form-data" >
+	<form method="post" action="/humorBoard/humorWriteProcess" enctype="multipart/form-data" >
 		<p>
 			<label>제목 : </label>
 			<input type="text" name="humor_title" required />

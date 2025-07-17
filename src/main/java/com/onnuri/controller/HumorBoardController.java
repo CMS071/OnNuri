@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.onnuri.dao.UserMapper;
+import com.onnuri.dto.HumorBoardCommentDto;
 import com.onnuri.dto.HumorBoardDto;
+import com.onnuri.service.HumorBoardCommentService;
 import com.onnuri.service.HumorBoardService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,13 +31,16 @@ public class HumorBoardController {
 	@Autowired
     private HumorBoardService humorBoardService;
 	
+	@Autowired
+	private HumorBoardCommentService humorBoardCommentService;
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.setDisallowedFields("humor_img");
 	}
 
     // 게시글 목록 페이지
-    @RequestMapping("/humor/list")
+    @RequestMapping("/humorBoard/list")
     public String list(Model model) {
         List<HumorBoardDto> list = humorBoardService.getAllHumors();
         model.addAttribute("list", list);
@@ -43,22 +48,27 @@ public class HumorBoardController {
     }
 
     // 게시글 상세보기 페이지
-    @RequestMapping("/humor/detail")
+    @RequestMapping("/humorBoard/detail")
     public String detail(@RequestParam("humor_idx") int humor_idx, Model model) {
     	humorBoardService.incrementViewCount(humor_idx); // 조회수 증가
-        HumorBoardDto dto = humorBoardService.getHumorById(humor_idx);
+        
+    	HumorBoardDto dto = humorBoardService.getHumorById(humor_idx);
+    	List<HumorBoardCommentDto> commentList = humorBoardCommentService.getCommentsByHumorIdx(humor_idx);
+    	
         model.addAttribute("dto", dto);
+        model.addAttribute("commentList", commentList);
+        
         return "humorBoard/humorDetail";
     }
 
     // 게시글 작성 폼
-    @RequestMapping("/humor/write")
+    @RequestMapping("/humorBoard/write")
     public String writeForm() {
         return "humorBoard/humorWrite";
     }
 
     // 게시글 작성 처리
-    @RequestMapping("/humor/humorWriteProcess")
+    @RequestMapping("/humorBoard/humorWriteProcess")
     public String write(@ModelAttribute HumorBoardDto dto,
     		@RequestParam(value = "humor_img", required = false) 
     		List<MultipartFile> files,
@@ -97,20 +107,20 @@ public class HumorBoardController {
 	}
 	
 	humorBoardService.insertHumor(dto);
-	return "redirect:/humor/list";
+	return "redirect:/humorBoard/list";
     }
 
     // 게시글 수정 처리
-    @RequestMapping("/humor/update")
+    @RequestMapping("/humorBoard/update")
     public String update(HumorBoardDto dto) {
     	humorBoardService.updateHumor(dto);
-        return "redirect:/humor/detail?id=" + dto.getHumor_idx();
+        return "redirect:/humorBoard/detail?id=" + dto.getHumor_idx();
     }
 
     // 게시글 삭제 처리
-    @RequestMapping("/humor/delete")
+    @RequestMapping("/humorBoard/delete")
     public String delete(@RequestParam("id") int humor_idx) {
     	humorBoardService.deleteHumor(humor_idx);
-        return "redirect:/humor/list";
+        return "redirect:/humorBoard/list";
     }
 }

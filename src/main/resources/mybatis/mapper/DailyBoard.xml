@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.onnuri.dao.DailyBoardDao">
+
+	<!-- 전체 게시글 조회 -->
+	<select id="getAllDailyBoards" resultType="com.onnuri.dto.DailyBoardDto">
+		select d.*, u.user_nickname 
+		from daily_board d 
+		left join user u on d.user_num = u.user_num 
+		order by d.daily_idx desc
+	</select>
+
+	<!-- 게시글 조회 -->
+	<select id="getDailyBoardById" resultType="com.onnuri.dto.DailyBoardDto">
+		select d.*, u.user_nickname 
+		from daily_board d 
+		left join user u on d.user_num = u.user_num  
+		where d.daily_idx = #{daily_idx}
+	</select>
+	
+	<!-- 게시글 등록 -->
+	<insert id="insertDailyBoard" parameterType="com.onnuri.dto.DailyBoardDto">
+		insert into daily_board (daily_title, daily_contents, daily_img, user_num) 
+		values (#{daily_title}, #{daily_contents}, #{daily_img}, #{user_num})
+	</insert>
+	
+	<!-- 게시글 수정 -->
+	<update id="updateDailyBoard" parameterType="com.onnuri.dto.DailyBoardDto">
+		update daily_board  
+		set daily_title = #{daily_title}, 
+			daily_contents = #{daily_contents},  
+			daily_img = #{daily_img}, 
+			daily_date = current_timestamp  
+		where daily_idx = #{daily_idx}	
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteDailyBoard" parameterType="int">
+		delete from daily_board 
+		where daily_idx = #{daily_idx}
+	</delete>
+	
+	<!-- 조회수 증가 -->
+	<update id="incrementViewCount" parameterType="int">
+		update daily_board 
+		set daily_cnt = daily_cnt + 1 
+		where daily_idx = #{daily_idx}
+	</update>
+	
+</mapper>  

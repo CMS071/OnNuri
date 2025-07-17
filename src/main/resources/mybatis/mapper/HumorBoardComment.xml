@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.onnuri.dao.HumorBoardCommentMapper">
+
+	<!-- 특정 게시물의 댓글 전체 조회 -->
+	<select id="getCommentsByHumorIdx" parameterType="int"  
+	resultType="com.onnuri.dto.HumorBoardCommentDto" >
+		select c.*, u.user_nickname 
+		from humor_board_comment c 
+		join user u on c.user_num = u.user_num 
+		where c.humor_idx = #{humor_idx}
+		order by c.humor_com_root asc, c.humor_com_step asc
+	</select>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insertComment" parameterType="com.onnuri.dto.HumorBoardCommentDto">
+		insert into humor_board_comment (humor_com_contents, humor_com_root,  
+		humor_com_step, humor_com_indent, user_num, humor_idx)
+		values (#{humor_com_contents}, #{humor_com_root}, #{humor_com_step},  
+		#{humor_com_indent}, #{user_num}, #{humor_idx})
+	</insert>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment" parameterType="int">
+		delete from humor_board_comment 
+		where humor_com_idx = #{humor_com_idx}
+	</delete>
+
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="com.onnuri.dto.HumorBoardCommentDto">
+		update humor_board_comment 
+		set humor_com_contents = #{humor_com_contents} 
+		where humor_com_idx = #{humor_com_idx}
+	</update>
+	
+	<!-- 댓글 조회 -->
+	<select id="getCommentById" parameterType="int" resultType="com.onnuri.dto.HumorBoardCommentDto">
+		select c.*, u.user_nickname 
+		from humor_board_comment c 
+		join user u on c.user_num = u.user_num 
+		where c.humor_com_idx = #{humor_com_idx}
+	</select>
+	
+	<!-- 대댓글 삽입을 위한 step 증가 -->
+	<update id="updateStep" parameterType="com.onnuri.dto.HumorBoardCommentDto">
+		update humor_board_comment 
+		set humor_com_step = humor_com_step + 1 
+		where humor_com_root = #{humor_com_root} 
+		and humor_com_step > #{humor_com_step}
+	</update>
+	
+	
+</mapper>  

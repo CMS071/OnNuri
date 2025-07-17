@@ -16,12 +16,12 @@
 	  </tr>
 	  <c:forEach var="dto" items="${list}">
 	  	<tr>
-			<td><a href="/humor/detail?humor_idx=${dto.humor_idx}">${dto.humor_title}</a></td>
+			<td><a href="/humorBoard/detail?humor_idx=${dto.humor_idx}">${dto.humor_title}</a></td>
 			<td>${dto.user_nickname}</td>	  	
 	  	</tr>
 	  </c:forEach>	
 	</table>
 	
-	<p><a href="/humor/write">글쓰기</a></p>
+	<p><a href="/humorBoard/write">글쓰기</a></p>
 </body>
 </html>
